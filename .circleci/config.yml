@@ -129,6 +129,36 @@ jobs:
               # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
               npm audit --audit-level=critical
       - slack/notify:
+          channel: '#test'
+          event: always
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+
+  testslack:
+    docker:
+      # Docker image here
+      - image: circleci/node:13.8.0
+    steps:
+      # Your job code here
+      - run:
+          name: Scan back-end
+          command: |
+            return 1
+      - slack/notify:
+          channel: '#test'
           event: always
           custom: |
             {
@@ -149,13 +179,15 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
+      - testslack
+#      - build-frontend
+#      - build-backend
+#      - test-frontend:
+#          requires: [build-frontend]
+#      - test-backend:
+#          requires: [build-backend]
+#      - scan-frontend:
+#          requires: [build-frontend]
+#      - scan-backend:
+#          requires: [build-backend]
+#
