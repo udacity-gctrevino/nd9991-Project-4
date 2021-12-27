@@ -128,8 +128,23 @@ jobs:
               npm audit fix --audit-level=critical --force
               # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
               npm audit --audit-level=critical
-      - notify_slack_error
-      - notify_slack_pass
+      - slack/notify:
+          event: always
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
 
 workflows:
   default:
