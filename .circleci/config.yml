@@ -20,6 +20,23 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event:
 
   build-backend:
     docker:
@@ -113,10 +130,6 @@ jobs:
               npm audit fix --audit-level=critical --force
               # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
               npm audit --audit-level=critical
-      - slack/notify:
-          channel: circleci
-          event: fail
-          template: basic_fail_1
 
 workflows:
   default:
