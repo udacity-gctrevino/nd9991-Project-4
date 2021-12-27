@@ -7,12 +7,14 @@ commands:
   notify_slack_error:
     steps:
       - slack/notify:
+          channel: '#test'
           event: fail
           template: basic_fail_1
 
   notify_slack_pass:
     steps:
       - slack/notify:
+          channel: '#test'
           event: pass
           template: basic_success_1
 
@@ -147,46 +149,16 @@ jobs:
               ]
             }
 
-  testslack:
-    docker:
-      # Docker image here
-      - image: circleci/node:13.8.0
-    steps:
-      # Your job code here
-      - run:
-          name: Scan back-end
-          command: |
-            return 1
-      - slack/notify:
-          event: always
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "plain_text",
-                      "text": "*This is a text notification*",
-                      "emoji": true
-                    }
-                  ]
-                }
-              ]
-            }
-
 workflows:
   default:
     jobs:
-      - testslack
-#      - build-frontend
-#      - build-backend
-#      - test-frontend:
-#          requires: [build-frontend]
-#      - test-backend:
-#          requires: [build-backend]
-#      - scan-frontend:
-#          requires: [build-frontend]
-#      - scan-backend:
-#          requires: [build-backend]
-#
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
