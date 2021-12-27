@@ -4,7 +4,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { CurrentUser } from './currentUser';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
+  imports: [PassportModule.registerx({ defaultStrategy: 'jwt' })],
   providers: [JwtStrategy, CurrentUser],
   exports: [JwtStrategy, CurrentUser],
 })
