@@ -158,7 +158,6 @@ jobs:
           command: |
             return 1
       - slack/notify:
-          channel: '#test'
           event: always
           custom: |
             {
