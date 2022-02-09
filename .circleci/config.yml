@@ -28,7 +28,7 @@ jobs:
           keys: [infrastructure-deploy]
       - run:
           name: Deploy infrastructure
-          commands: |
+          command: |
             yum -y install tar gzip
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
