@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Description": "AWS CloudFormation Sample Template for creating an Amazon RDS DB instance:
+  Sample template showing how to create a DB instance with Enhanced Monitoring enabled.
+  **WARNING** This template creates an RDS DB instance. You will be billed for the AWS
+  resources used if you create a stack from this template.
+Parameters:
+  DBInstanceID:
+    Default: rdspostgres
+    Type: String
+  DBName:
+    Default: postgres
+    Type: String
+  DBInstanceClass:
+    Default: db.t2.micro
+    Type: String
+  DBAllocatedStorage:
+    Default: '20'
+    Type: Number
+    MinValue: '20'
+    MaxValue: '65536'
+    ConstraintDescription: must be between 20 and 65536 GiB.
+  DBUsername:
+    Default: "postgres"
+    NoEcho: 'true'
+    Type: String
+    MinLength: '1'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    Default: "password"
+    NoEcho: 'true'
+    Description: Password MySQL database access
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: must contain only alphanumeric characters.
+  BucketName:
+    Description: S3 bucket name for the RDS DB instance
+    Type: String
+    Default: 'udapeople-6b86047ed840e3c'
+
+Outputs:
+  RDSEndpoint:
+    Value: !GetAtt MyDB.Endpoint.Address
+  RDSPort:
+    Value: !GetAtt MyDB.Endpoint.Port
+
+Resources:
+  MyDB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: !Ref DBInstanceID
+      DBName: !Ref DBName
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref DBAllocatedStorage
+      Engine: postgres
+      EngineVersion: 12
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      #MonitoringInterval: '60'
+      #MonitoringRoleArn: !Sub 'arn:aws:iam::${AWS::AccountId}:role/rds-monitoring-role'
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # AccessControl: PublicRead
+      BucketName: !Ref BucketName
+
+  PublicMyS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyS3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Resource:
+              - !Join ['/', [!GetAtt [MyS3Bucket, Arn], '*']]
+            Principal: '*'
+
+# aws cloudformation create-stack --stack-name postgresstack --template-body file://postgres.yaml
+# aws cloudformation update-stack --stack-name postgresstack --template-body file://postgres.yaml
+# aws cloudformation delete-stack --stack-name postgresstack
+
+# aws cloudformation deploy --template-file cloudfront.yml --stack-name InitialStack --parameter-overrides WorkflowID=udapeople-6b86047ed840e3c

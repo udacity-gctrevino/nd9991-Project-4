@@ -19,6 +19,23 @@ commands:
           template: basic_success_1
 
 jobs:
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli:latest
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [infrastructure-deploy]
+      - run:
+          name: Deploy infrastructure
+          commands: |
+            yum -y install tar gzip
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+              --tags project=udapeople
+
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
