@@ -4,6 +4,17 @@ orbs:
   slack: circleci/slack@4.5.1
 
 commands:
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+#    parameters:
+      # Add parameter here
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
   notify_slack_error:
     steps:
       - slack/notify:
@@ -19,23 +30,6 @@ commands:
           template: basic_success_1
 
 jobs:
-  deploy-infrastructure:
-    docker:
-      - image: amazon/aws-cli:latest
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [infrastructure-deploy]
-      - run:
-          name: Deploy infrastructure
-          command: |
-            yum -y install tar gzip
-            aws cloudformation deploy \
-              --template-file .circleci/files/backend.yml \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-              --tags project=udapeople
-
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -158,14 +152,69 @@ jobs:
       - notify_slack_error
       - notify_slack_pass
 
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli:latest
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [infrastructure-deploy]
+      - run:
+          name: Install tar and zip
+          command: |
+            yum -y install tar gzip
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            yum -y install tar gzip
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+              --tags project=udapeople
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+              --tags project=udapeople
+#      - run:
+#          name: Add back-end ip to ansible inventory
+#          command: |
+#            # Your code here
+#            exit 1
+#      - persist_to_workspace:
+#          root: ~/
+#          paths:
+#            - project/.circleci/ansible/inventory.txt
+#      # Here's where you will add some code to rollback on failure
+#
+#  configure-infrastructure:
+#    docker:
+#      # Docker image here that supports Ansible
+#    steps:
+#      # Checkout code from git
+#      # Add ssh keys with fingerprint
+#      # attach workspace
+#      - run:
+#          name: Install dependencies
+#          command: |
+#            # Your code here
+#            exit 1
+#      - run:
+#          name: Configure server
+#          command: |
+#            # Your code here
+#            exit 1
+#      # Here's where you will add some code to rollback on failure
+
 workflows:
   default:
     jobs:
-      - deploy-infrastructure
-      - build-frontend:
-          requires: [deploy-infrastructure]
-      - build-backend:
-          requires: [deploy-infrastructure]
+      - build-frontend
+      - build-backend
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
@@ -174,3 +223,8 @@ workflows:
           requires: [build-frontend]
       - scan-backend:
           requires: [build-backend]
+      - deploy-infrastructure:
+          requires: [build-frontend, build-backend, test-frontend, test-backend, scan-frontend, scan-backend]
+      - destroy-infrastructure:
+          requires: [deploy-infrastructure]
+

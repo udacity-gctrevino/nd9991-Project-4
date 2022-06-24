@@ -1,9 +1,12 @@
 ## Section 1
-
+---
+CI/CD benefits proposal
+https://github.com/udacity-gctrevino/nd9991-Project-4/blob/main/Project4/Section1/Selling%20CICD%20to%20your%20Team.pdf
 
 ## Section 2
 ---
-URL01 - https://github.com/udacity-gctrevino/nd9991-Project-4/tree/main/Project4
+A public git repository with your project code. [URL01]
+https://github.com/udacity-gctrevino/nd9991-Project-4/
 
 
 Build Jobs that failed because of compile errors. [SCREENSHOT01]
@@ -17,3 +20,4 @@ https://raw.githubusercontent.com/udacity-gctrevino/nd9991-Project-4/main/Projec
 
 An alert from one of your failed builds. [SCREENSHOT04]
 https://raw.githubusercontent.com/udacity-gctrevino/nd9991-Project-4/main/Project4/Section2/Screenshot04.png
+
