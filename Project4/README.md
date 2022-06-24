@@ -20,7 +20,7 @@ Build Jobs that failed because of compile errors. [SCREENSHOT01]
 3. Job that failed because of vulnerable packages. [SCREENSHOT03]
 ![Screenshot 03](https://raw.githubusercontent.com/udacity-gctrevino/nd9991-Project-4/main/Project4/Section2/Screenshot03.png)
 
-4. An alert from one of your failed builds. [SCREENSHOT04]
+4. An alert from one of your failed builds. [SCREENSHOT04] Slack & Mail
 ![Screenshot 04](https://raw.githubusercontent.com/udacity-gctrevino/nd9991-Project-4/main/Project4/Section2/Screenshot04.png)
 ![Screenshot 04 Mail](https://raw.githubusercontent.com/udacity-gctrevino/nd9991-Project-4/main/Project4/Section2/Screenshot04-mail.png)
 
