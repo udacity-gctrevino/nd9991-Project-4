@@ -182,35 +182,49 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
-#      - run:
-#          name: Add back-end ip to ansible inventory
-#          command: |
-#            # Your code here
-#            exit 1
-#      - persist_to_workspace:
-#          root: ~/
-#          paths:
-#            - project/.circleci/ansible/inventory.txt
-#      # Here's where you will add some code to rollback on failure
-#
-#  configure-infrastructure:
-#    docker:
-#      # Docker image here that supports Ansible
-#    steps:
-#      # Checkout code from git
-#      # Add ssh keys with fingerprint
-#      # attach workspace
-#      - run:
-#          name: Install dependencies
-#          command: |
-#            # Your code here
-#            exit 1
-#      - run:
-#          name: Configure server
-#          command: |
-#            # Your code here
-#            exit 1
-#      # Here's where you will add some code to rollback on failure
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --query 'Reservations[*].Instances[*].PublicIpAddresses' \
+            --output text >> .circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure
+#      - destroy-infrastructure:
+#          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+#          event: on_fail
+
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: ansible/ansible
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints:
+            - "e4:b0:ce:d2:c4:52:9f:c9:e6:a9:a8:71:d4:37:74:42"
+      # attach workspace
+      - attach_workspace:
+            at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            # exit 1
+            apt get update
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            # exit 1
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+      # Here's where you will add some code to rollback on failure
 
 workflows:
   default:
@@ -227,6 +241,8 @@ workflows:
           requires: [build-backend]
       - deploy-infrastructure:
           requires: [build-frontend, build-backend, test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-ingrastructure:
+          requires: [deploy-infrastructure]
 #      - destroy-infrastructure:
 #          requires: [deploy-infrastructure]
 
