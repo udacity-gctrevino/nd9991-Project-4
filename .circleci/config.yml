@@ -189,6 +189,7 @@ jobs:
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddresses' \
             --output text >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
@@ -201,7 +202,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: ansible/ansible
+      - image: python:latest
     steps:
       # Checkout code from git
       - checkout
@@ -218,6 +219,7 @@ jobs:
             # Your code here
             # exit 1
             apt get update
+            apt get ansible
       - run:
           name: Configure server
           command: |
