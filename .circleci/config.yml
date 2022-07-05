@@ -206,7 +206,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: rancher/ansible-runner
+      image: ubuntu-2204:2022.04.2
     steps:
       # Checkout code from git
       - checkout
@@ -223,6 +223,7 @@ jobs:
             # Your code here
             # exit 1
             echo Hello
+            sudo apt update
       - run:
           name: Configure server
           command: |
