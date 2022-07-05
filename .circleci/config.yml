@@ -207,7 +207,7 @@ jobs:
     docker:
       # Docker image here that supports Ansible
       #- image: ubuntu-2204:2022.04.2
-      - image: python:3.7-alpine3.11
+      - image: python:3.8-alpine3.16
     steps:
       # Checkout code from git
       - checkout
