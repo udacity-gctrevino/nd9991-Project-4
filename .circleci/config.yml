@@ -172,7 +172,6 @@ jobs:
       - run:
           name: Ensure back-end infrastructure exists
           command: |
-            yum -y install tar gzip
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
@@ -206,7 +205,7 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      - image: python:3.8-alpine3.16
+      - image: cimg/base:2022.07
     steps:
       # Checkout code from git
       - checkout
@@ -221,14 +220,23 @@ jobs:
           name: Install dependencies
           command: |
             # Your code here
-            # exit 1
-            echo Hello
-            #sudo apt update
+            sudo apt update && sudo apt upgrade
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository ppa:deadsnakes/ppa -y
+            sudo apt update
+            sudo apt install python3.8 -y
+            python3.8 --version
+            python3 --version
+            sudo apt install python3.8-venv -y
+            python3 -m pip -V
+            python3 -m pip install --user ansible
+            ansible --version
       - run:
           name: Configure server
           command: |
             # Your code here
             # exit 1
+            ls
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
