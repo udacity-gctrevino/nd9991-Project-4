@@ -220,16 +220,9 @@ jobs:
           name: Install dependencies
           command: |
             # Your code here
-            sudo apt update && sudo apt upgrade
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository ppa:deadsnakes/ppa -y
-            sudo apt update
-            sudo apt install python3.8 -y
-            python3.8 --version
-            python3 --version
-            sudo apt install python3.8-venv -y
-            python3 -m pip -V
-            python3 -m pip install --user ansible
+            sudo apt update && sudo apt upgrade -y
+            sudo apt install python3 python3-pip -y
+            pip install ansible
             ansible --version
       - run:
           name: Configure server
