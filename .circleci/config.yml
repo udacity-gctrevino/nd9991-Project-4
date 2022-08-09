@@ -222,8 +222,11 @@ jobs:
           command: |
             # Your code here
             sudo apt update && sudo apt upgrade -y
-            sudo apt install python3 python3-pip -y
-            pip install ansible ansible-modules-pm2
+            sudo apt install python3 python3-pip nodejs -y
+            pip install ansible
+
+            npm install pm2 -g
+
             ansible --version
       - run:
           name: Configure server
