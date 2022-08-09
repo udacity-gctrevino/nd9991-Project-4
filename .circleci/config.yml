@@ -222,7 +222,7 @@ jobs:
             # Your code here
             sudo apt update && sudo apt upgrade -y
             sudo apt install python3 python3-pip -y
-            pip install ansible
+            pip install ansible pm2
             ansible --version
       - run:
           name: Configure server
