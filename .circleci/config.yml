@@ -6,6 +6,8 @@ orbs:
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    docker:
+      - image: amazon/aws-cli:latest
     parameters:
       # Add parameter here
       workflow_id:
@@ -222,7 +224,7 @@ jobs:
             # Your code here
             sudo apt update && sudo apt upgrade -y
             sudo apt install python3 python3-pip -y
-            pip install ansible pm2
+            pip install ansible ansible-modules-pm2
             ansible --version
       - run:
           name: Configure server
