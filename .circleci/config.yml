@@ -225,7 +225,7 @@ jobs:
           command: |
             # Your code here
             sudo apt update && sudo apt upgrade -y
-            sudo apt install python3 python3-pip nodejs npm -y
+            sudo apt install python3 python3-pip nodejs npm jq -y
             pip install ansible
 
             npm install pm2
