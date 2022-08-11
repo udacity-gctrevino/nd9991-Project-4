@@ -203,6 +203,9 @@ jobs:
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
+      - notify_slack_error
+      - notify_slack_pass
+
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
@@ -241,6 +244,86 @@ jobs:
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+              cd backend
+              npm install
+              # Run and save the migration output
+              npm run migrations > migrations_dump.txt
+
+      - run:
+        name: Send migration status to kvdb.io OR memstash.io
+        command: |
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+                # If you are using kvdb.io, generate the bucket ID "5Me9ZKVsMWSR32rszt4CFY" in your local terminal first
+                curl https://kvdb.io/5Me9ZKVsMWSR32rszt4CFY/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
+
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli:latest
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [infrastructure-deploy]
+      - attach_workspace:
+          at: ~/
+      - run:
+        name: Deploy Frontend
+        command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+  deploy-backend:
+    docker:
+      # Docker image here that supports Ansible
+      - image: cimg/base:2022.07
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints:
+            - "e4:b0:ce:d2:c4:52:9f:c9:e6:a9:a8:71:d4:37:74:42"
+      # attach workspace
+      - attach_workspace:
+            at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            sudo apt update && sudo apt upgrade -y
+            sudo apt install python3 python3-pip nodejs npm -y
+            pip install ansible
+
+            npm install pm2
+
+            ansible --version
+
+      - run:
+          name: Deploy Backend
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+
 workflows:
   default:
     jobs:
@@ -258,6 +341,12 @@ workflows:
           requires: [build-frontend, build-backend, test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
 #      - destroy-infrastructure:
 #          requires: [deploy-infrastructure]
 
