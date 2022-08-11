@@ -250,9 +250,17 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - attach_workspace:
+          at: ~/
       - run:
           name: Run migrations
           command: |
+              export BACKEND_IP=$(cat project/.circleci/ansible/inventory.txt)
+              export API_URL="http://${BACKEND_IP}:3030"
+              echo "API_URL = ${API_URL}"
+              echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+              cat frontend/.env
+
               cd backend
               npm install
               # Run and save the migration output
@@ -267,6 +275,9 @@ jobs:
                 # If you are using kvdb.io, generate the bucket ID "5Me9ZKVsMWSR32rszt4CFY" in your local terminal first
                 curl https://kvdb.io/5Me9ZKVsMWSR32rszt4CFY/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
+
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   deploy-frontend:
     docker:
@@ -285,6 +296,9 @@ jobs:
               npm run build
               tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
               aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   deploy-backend:
     docker:
@@ -325,6 +339,9 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 workflows:
   default:
