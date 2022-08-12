@@ -250,8 +250,12 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "e4:b0:ce:d2:c4:52:9f:c9:e6:a9:a8:71:d4:37:74:42"
+      # attach workspace
       - attach_workspace:
-          at: ~/
+            at: ~/
       - run:
           name: Run migrations
           command: |
@@ -284,6 +288,12 @@ jobs:
       - image: amazon/aws-cli:latest
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "e4:b0:ce:d2:c4:52:9f:c9:e6:a9:a8:71:d4:37:74:42"
+      # attach workspace
+      - attach_workspace:
+            at: ~/
       - restore_cache:
           keys: [infrastructure-deploy]
       - attach_workspace:
