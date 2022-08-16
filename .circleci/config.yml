@@ -285,7 +285,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli:latest
+      - image: cimg/aws:2022.06
     steps:
       - checkout
       - add_ssh_keys:
@@ -298,6 +298,12 @@ jobs:
           keys: [infrastructure-deploy]
       - attach_workspace:
           at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            # Your code here
+            sudo apt update && sudo apt upgrade -y
+            #sudo apt install python3 python3-pip nodejs npm jq -y
       - run:
           name: Deploy Frontend
           command: |
