@@ -1,5 +1,12 @@
+We are archiving this repository because we do not want learners to push personal development to the current repository. If you have any issues or suggestions to make, feel free to:
+- Utilize the https://knowledge.udacity.com/ forum to seek help on content-specific issues.
+- [Submit a support ticket](https://udacity.zendesk.com/hc/en-us/requests/new) along with the link to your forked repository. 
+- If you are an enterprise learner, please [Submit a support ticket here](https://udacityenterprise.zendesk.com/hc/en-us/requests/new?ticket_form_id=360000279131)
+
 # nd9991-Project-4
 Build CI/CD Pipelines, Monitoring &amp; Logging
+
+Source: git@github.com:udacity/nd9991-c2-Infrastructure-as-Code-v1.git
 
 ## Give your Application Auto-Deploy Superpowers
 
@@ -37,16 +44,16 @@ For your submission, please submit the following:
   1. An alert from one of your failed builds. [SCREENSHOT04]
   1. Appropriate job failure for infrastructure creation. [SCREENSHOT05]
   1. Appropriate job failure for the smoke test job. [SCREENSHOT06]
-  1. Successful rollback after a failed smoke test. [SCREENSHOT07]
+  1. Successful rollback after a failed smoke test. [SCREENSHOT07]  
   1. Successful promotion job. [SCREENSHOT08]
   1. Successful cleanup job. [SCREENSHOT09]
   1. Only deploy on pushed to `master` branch. [SCREENSHOT10]
   1. Provide a screenshot of a graph of your EC2 instance including available memory, available disk space, and CPU usage. [SCREENSHOT11]
   1. Provide a screenshot of an alert that was sent by Prometheus. [SCREENSHOT12]
 
-- Your presentation should be in PDF format named "presentation.pdf" and should be included in your code repository root folder.
+- Your presentation should be in PDF format named "presentation.pdf" and should be included in your code repository root folder. 
 
-Before you submit your project, please check your work against the project rubric. If you haven’t satisfied each criterion in the rubric, then revise your work so that you have met all the requirements.
+Before you submit your project, please check your work against the project rubric. If you haven’t satisfied each criterion in the rubric, then revise your work so that you have met all the requirements. 
 
 ### Built With
 
